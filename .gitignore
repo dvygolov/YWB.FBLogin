@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /proxy.txt
 /accounts.txt
+/parsed.txt

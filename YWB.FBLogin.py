@@ -47,6 +47,9 @@ def login(session, email, password):
         data={"email": email, "pass": password},
         allow_redirects=False,
     )
+    if "checkpoint" in response.headers["Location"]:
+        print("Checkpoint!")
+        return None
     assert response.status_code == 302
     assert "c_user" in response.cookies
     return response.cookies
@@ -83,24 +86,31 @@ if __name__ == "__main__":
     copyright()
     pr = get_proxies()
     accounts = get_accounts()
-    i=0
-    with open('parsed.txt','w') as f:
+    i = 0
+    with open("parsed.txt", "w") as f:
         for acc in accounts:
             print(f"Processing account {acc['login']}:{acc['password']}...")
-            proxyindex = i if i < len(pr) - 1 else i % len(pr);
-            cp= pr[proxyindex];
+            proxyindex = i if i < len(pr) - 1 else i % len(pr)
+            cp = pr[proxyindex]
             session = requests.session()
-            sproxy = {"https",f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}"}
-            session.proxies=sproxy
-            cookies = login(session, acc['login'], acc['password'])
+            sproxy = {
+                "https",
+                f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
+            }
+            session.proxies = sproxy
+            cookies = login(session, acc["login"], acc["password"])
+            if cookies == None:
+                continue
             token = get_token(session, cookies)
             if token != "":
                 print("Found token and cookies!")
-                acc['cookies']= dump_cookies(cookies)
-                acc['token']=token
-                f.write(f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n")
+                acc["cookies"] = dump_cookies(cookies)
+                acc["token"] = token
+                f.write(
+                    f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n"
+                )
             else:
                 print("Token and cookies not found(((")
-            i+=1
+            i += 1
 
     print("All done. Accounts with tokens and cookies written to parsed.txt file.")
