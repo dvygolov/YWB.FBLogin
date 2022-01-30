@@ -1,9 +1,9 @@
-import time, requests, re, json
+import time, requests, re
 
 
 def copyright():
     print()
-    print("               Get Facebook Cookies and Access Token v0.1")
+    print("               Get Facebook Cookies and Access Token v0.2")
     print("   _            __     __  _ _             __          __  _     ")
     print("  | |           \ \   / / | | |            \ \        / / | |    ")
     print("  | |__  _   _   \ \_/ /__| | | _____      _\ \  /\  / /__| |__  ")
@@ -45,26 +45,31 @@ def login(session, email, password):
     response = session.post(
         "https://m.facebook.com/login.php",
         data={"email": email, "pass": password},
-        allow_redirects=False,
+        allow_redirects=True,
     )
-    if "checkpoint" in response.headers["Location"]:
+    if "checkpoint" in response.url:
         print("Checkpoint!")
-        return None
-    assert response.status_code == 302
-    assert "c_user" in response.cookies
-    return response.cookies
+        return False
+    assert "c_user" in session.cookies
+    return True
 
 
-def get_token(session, cookies):
-    response = session.get("https://fb.com/pe", cookies=cookies, allow_redirects=True)
+def get_token(session):
+    response = session.get("https://web.facebook.com/ads/manager?locale=en_US&_rdc=1&_rdr", allow_redirects=True)
+    if "checkpoint" in response.url:
+        print("Checkpoint!")
+        return None 
     match = re.search('window\.location\.replace\("([^"]+)', response.text)
-    adsurl = match.group(1).replace("\\", "")
-    response = session.get(adsurl, cookies=cookies, allow_redirects=True)
+    if match!=None:
+        adsurl = match.group(1).replace("\\", "")
+        response = session.get(adsurl, allow_redirects=True)
+    else:
+        response=session.get(response.url)
     match = re.search('EAAB[^"]+', response.text)
     if match:
         return match.group(0)
     else:
-        return ""
+        return None
 
 
 def dump_cookies(sessioncookies):
@@ -98,13 +103,13 @@ if __name__ == "__main__":
                 f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
             }
             session.proxies = sproxy
-            cookies = login(session, acc["login"], acc["password"])
-            if cookies == None:
+            loggedin=login(session, acc["login"], acc["password"])
+            if not loggedin:
                 continue
-            token = get_token(session, cookies)
-            if token != "":
+            token = get_token(session)
+            if token != None:
                 print("Found token and cookies!")
-                acc["cookies"] = dump_cookies(cookies)
+                acc["cookies"] = dump_cookies(session.cookies)
                 acc["token"] = token
                 f.write(
                     f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n"
