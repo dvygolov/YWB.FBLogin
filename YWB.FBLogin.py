@@ -50,7 +50,9 @@ def login(session, email, password):
     if "checkpoint" in response.url:
         print("Checkpoint!")
         return False
-    assert "c_user" in session.cookies
+    if not "c_user" in session.cookies:
+        print("Couldn't find c_user cookie!")
+        return False
     return True
 
 
