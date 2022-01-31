@@ -1,0 +1,2 @@
+random-user-agent==1.0.1
+requests==2.27.1
