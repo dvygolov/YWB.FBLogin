@@ -5,7 +5,7 @@ import time, requests, re, json
 
 def copyright():
     print()
-    print("               Get Facebook Cookies and Access Token v0.7")
+    print("               Get Facebook Cookies and Access Token v0.8")
     print("   _            __     __  _ _             __          __  _     ")
     print("  | |           \ \   / / | | |            \ \        / / | |    ")
     print("  | |__  _   _   \ \_/ /__| | | _____      _\ \  /\  / /__| |__  ")
@@ -29,13 +29,23 @@ def get_proxies():
     plines = pfile.readlines()
     for p in plines:
         ps = p.strip().split(":")
-        proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3]})
+        if len(ps)==4:
+            proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3]})
+        elif len(ps)==5:
+            proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3], "link":ps[4]})
+        else:
+            raise ValueError('Wrong proxy format!')
     return proxies
 
 
 def set_proxy(session, proxies, i):
     proxyindex = i if i < len(pr) - 1 else i % len(pr)
     cp = proxies[proxyindex]
+    if 'link' in cp:
+        print('Updating proxy ip address using link...')
+        plink="http://"+cp['link']
+        response=requests.get(plink)
+        print('Proxy ip address updated!')
     sproxy = {
         "https",
         f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
