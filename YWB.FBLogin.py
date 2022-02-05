@@ -32,7 +32,8 @@ def get_proxies():
         proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3]})
     return proxies
 
-def set_proxy(session,proxies,i):
+
+def set_proxy(session, proxies, i):
     proxyindex = i if i < len(pr) - 1 else i % len(pr)
     cp = proxies[proxyindex]
     sproxy = {
@@ -41,6 +42,7 @@ def set_proxy(session,proxies,i):
     }
     session.proxies = sproxy
     return
+
 
 def get_accounts():
     accounts = []
@@ -53,29 +55,27 @@ def get_accounts():
 
 
 def login(session, email, password):
-    #set our useragent to some mobile phone
-    hardware_types=[HardwareType.MOBILE.value]
-    user_agent_rotator=UserAgent(hardware_types=hardware_types)
-    user_agent=user_agent_rotator.get_random_user_agent()
-    session.headers.update({
-        'User-Agent': user_agent
-    })
+    # set our useragent to some mobile phone
+    hardware_types = [HardwareType.MOBILE.value]
+    user_agent_rotator = UserAgent(hardware_types=hardware_types)
+    user_agent = user_agent_rotator.get_random_user_agent()
+    session.headers.update({"User-Agent": user_agent})
 
-    email=email.strip()
-    password=password.strip()
-    response = session.get("https://m.facebook.com");
-    #get parameters from login form: lsd, li è m_ts
-    match = re.search('name=\"lsd\"\s+value=\"([^\"]+)\"', response.text)
+    email = email.strip()
+    password = password.strip()
+    response = session.get("https://m.facebook.com")
+    # get parameters from login form: lsd, li Ð¸ m_ts
+    match = re.search('name="lsd"\s+value="([^"]+)"', response.text)
     if match == None:
         print("Can't find lsd value!")
         return False
     lsd = match.group(1)
-    match = re.search('name=\"li\"\s+value=\"([^\"]+)\"', response.text)
+    match = re.search('name="li"\s+value="([^"]+)"', response.text)
     if match == None:
         print("Can't find li value!")
         return False
     li = match.group(1)
-    match = re.search('name=\"m_ts\"\s+value=\"([^\"]+)\"', response.text)
+    match = re.search('name="m_ts"\s+value="([^"]+)"', response.text)
     if match == None:
         print("Can't find m_ts value!")
         return False
@@ -84,45 +84,56 @@ def login(session, email, password):
     response = session.post(
         "https://m.facebook.com/login/device-based/regular/login/?shbl=1&refsrc=deprecated",
         data={
-            "lsd" :lsd,
+            "lsd": lsd,
             "m_ts": mts,
-            "li":li,
-            "try_number":0,
-            "unrecognized_tries":0,
-            "email": email, 
+            "li": li,
+            "try_number": 0,
+            "unrecognized_tries": 0,
+            "email": email,
             "pass": password,
             "login": "Log In",
-            "had_cp_prefilled":False,
-            "had_password_prefilled":False,
-            "is_smart_lock":False,
-            "bi_xrwh":0,
-            "_fb_noscript":True
+            "had_cp_prefilled": False,
+            "had_password_prefilled": False,
+            "is_smart_lock": False,
+            "bi_xrwh": 0,
+            "_fb_noscript": True,
         },
         allow_redirects=False,
     )
     if response.status_code == 302:
+        if "c_user" in session.cookies:
+            print("Logged in!")
+            return True
+
         location = response.headers["Location"]
         if "checkpoint" in location:
             print("Checkpoint!")
             return False
-        if "c_user" in session.cookies:
-            print("Logged in!")
-            return True
-    print(f"Your account may be disabled! Unknown response: {response.status_code} {response.url}")
+        if "recover" in location or "login" in location:
+            print("Wrong login or password!")
+            return False
+        #response = session.get(location+'&locale=en_US')
+    print(
+        f"Your account may be disabled! Unknown response: {response.status_code} {response.url}"
+    )
     return False
 
 
 def get_token(session):
-    session.headers.update({'User-Agent': 'Mozilla5/0'})
-    session.headers.update({'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'})
-    session.headers.update({'Accept-Encoding':'gzip'})
-    session.headers.update({'Accept-Language':'ru,en-US;q=0.7,en;q=0.3'})
-    session.headers.update({'Connection':'keep-alive'})
-    session.headers.update({'Sec-Fetch-Dest':'document'})
-    session.headers.update({'Sec-Fetch-Mode':'navigate'})
-    session.headers.update({'Sec-Fetch-Site':'same-origin'})
-    session.headers.update({'Sec-Fetch-User':'?1'})
-    session.cookies.pop('noscript',None)
+    session.headers.update({"User-Agent": "Mozilla5/0"})
+    session.headers.update(
+        {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+        }
+    )
+    session.headers.update({"Accept-Encoding": "gzip"})
+    session.headers.update({"Accept-Language": "ru,en-US;q=0.7,en;q=0.3"})
+    session.headers.update({"Connection": "keep-alive"})
+    session.headers.update({"Sec-Fetch-Dest": "document"})
+    session.headers.update({"Sec-Fetch-Mode": "navigate"})
+    session.headers.update({"Sec-Fetch-Site": "same-origin"})
+    session.headers.update({"Sec-Fetch-User": "?1"})
+    session.cookies.pop("noscript", None)
     response = session.get(
         "https://www.facebook.com/ads/manager?locale=en_US",
         allow_redirects=True,
@@ -165,7 +176,7 @@ if __name__ == "__main__":
         for acc in accounts:
             session = requests.session()
             print(f"Processing account {acc['login']}:{acc['password']}...")
-            set_proxy(session,pr,i)
+            set_proxy(session, pr, i)
             loggedin = login(session, acc["login"], acc["password"])
             if not loggedin:
                 continue
