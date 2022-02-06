@@ -11,7 +11,8 @@ login2:pass2<br>
 and so on...
 2. Create a `proxy.txt` file and put your proxy (or several proxies line by line) like this:<br>
 `ip:port:login:password:ipupdatelink`<br>
-If you don't need ip update link then just use: `ip:port:login:password`
+If you don't need ip update link then just use: `ip:port:login:password`<br>
+If you add multiple proxies they will be used in a round robbin manner.
 3. Run the script using Pyton 3.7 or higher: `python3 YWB.FBLogin.py`
 4. If you don't need birthday and email then answer 'N' to the question about adding Tinder app
 5. After everything is done all the account's info will be saved to `parsed.txt` file.
