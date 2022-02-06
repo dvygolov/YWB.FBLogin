@@ -1,3 +1,4 @@
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import HardwareType
 import time, requests, re, json
@@ -5,7 +6,7 @@ import time, requests, re, json
 
 def copyright():
     print()
-    print("               Get Facebook Cookies and Access Token v0.8")
+    print("               Get Facebook Cookies and Access Token v0.9")
     print("   _            __     __  _ _             __          __  _     ")
     print("  | |           \ \   / / | | |            \ \        / / | |    ")
     print("  | |__  _   _   \ \_/ /__| | | _____      _\ \  /\  / /__| |__  ")
@@ -30,9 +31,12 @@ def get_proxies():
     for p in plines:
         ps = p.strip().split(":")
         if len(ps)==4:
-            proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3]})
+            proxies.append({"type":"https","ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3]})
         elif len(ps)==5:
-            proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3], "link":ps[4]})
+            proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3], "link":f"http://{ps[4]}"})
+        elif len(ps)==6 and (ps[4]=="http" or ps[4]=="https"):
+            ulink=f"{ps[4]}:{ps[5]}"
+            proxies.append({"ip": ps[0], "port": ps[1], "login": ps[2], "password": ps[3], "link":ulink})
         else:
             raise ValueError('Wrong proxy format!')
     return proxies
@@ -42,10 +46,13 @@ def set_proxy(session, proxies, i):
     proxyindex = i if i < len(pr) - 1 else i % len(pr)
     cp = proxies[proxyindex]
     if 'link' in cp:
+
         print('Updating proxy ip address using link...')
-        plink="http://"+cp['link']
-        response=requests.get(plink)
-        print('Proxy ip address updated!')
+        response=requests.get(cp['link'],verify=False)
+        if "Content-Type" in response.headers and response.headers["Content-Type"]=="application/json":
+            print("Got response:"+json.dumps(response.text))
+        else:
+            print('Proxy ip address updated!')
     sproxy = {
         "https",
         f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
@@ -122,20 +129,13 @@ def login(session, email, password):
         if "recover" in location or "login" in location:
             print("Wrong login or password!")
             return False
-        #response = session.get(location+'&locale=en_US')
-    print(
-        f"Your account may be disabled! Unknown response: {response.status_code} {response.url}"
-    )
+    print(f"Your account may be disabled! Unknown response: {response.status_code} {response.url}")
     return False
 
 
 def get_token(session):
     session.headers.update({"User-Agent": "Mozilla5/0"})
-    session.headers.update(
-        {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
-        }
-    )
+    session.headers.update({"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8" } )
     session.headers.update({"Accept-Encoding": "gzip"})
     session.headers.update({"Accept-Language": "ru,en-US;q=0.7,en;q=0.3"})
     session.headers.update({"Connection": "keep-alive"})
@@ -165,19 +165,12 @@ def get_token(session):
 def dump_cookies(sessioncookies):
     cookies = []
     for c in sessioncookies:
-        cookies.append(
-            {
-                "name": c.name,
-                "value": c.value,
-                "domain": c.domain,
-                "path": c.path,
-                "expires": c.expires,
-            }
-        )
+        cookies.append({"name": c.name,"value":c.value,"domain":c.domain,"path":c.path,"expires":c.expires})
     return cookies
 
 
 if __name__ == "__main__":
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     copyright()
     pr = get_proxies()
     accounts = get_accounts()
@@ -195,9 +188,7 @@ if __name__ == "__main__":
                 print("Found Accesss Token!")
                 acc["cookies"] = json.dumps(dump_cookies(session.cookies))
                 acc["token"] = token
-                f.write(
-                    f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n"
-                )
+                f.write( f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n" )
             else:
                 print("Token not found!")
             i += 1
