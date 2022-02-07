@@ -7,7 +7,7 @@ from Tinder import Tinder
 
 def copyright():
     print()
-    print("               Get Facebook Cookies and Access Token v1.1")
+    print("               Get Facebook Cookies and Access Token v1.2")
     print("   _            __     __  _ _             __          __  _     ")
     print("  | |           \ \   / / | | |            \ \        / / | |    ")
     print("  | |__  _   _   \ \_/ /__| | | _____      _\ \  /\  / /__| |__  ")
@@ -76,7 +76,7 @@ def set_proxy(session, proxies, i):
         response = requests.get(cp["link"], verify=False)
         if (
             "Content-Type" in response.headers
-            and response.headers["Content-Type"] == "application/json"
+            and response.headers["Content-Type"].startswith("application/json")
         ):
             print("Got response:" + json.dumps(response.text))
         else:
@@ -167,6 +167,10 @@ def login(session, email, password):
     return False
 
 
+def parse_token(text):
+    match = re.search('EAAB[^"]+', text)
+    return match.group(0) if match else None
+
 def get_token(session):
     session.headers.update({"User-Agent": "Mozilla5/0"})
     session.headers.update(
@@ -189,15 +193,16 @@ def get_token(session):
     if "checkpoint" in response.url:
         print("Checkpoint!")
         return None
+    if "login" in response.url:
+        print("Account not logged in!")
+        return None
     match = re.search('window\.location\.replace\("([^"]+)', response.text)
     if match != None:
         adsurl = match.group(1).replace("\\", "")
         response = session.get(adsurl, allow_redirects=True)
-        match = re.search('EAAB[^"]+', response.text)
-        if match:
-            return match.group(0)
-        else:
-            return None
+        return parse_token(response.text)
+    else:
+        return parse_token(response.text)
 
 
 def dump_cookies(sessioncookies):
@@ -226,20 +231,19 @@ if __name__ == "__main__":
     )
     pr = get_proxies()
     accounts = get_accounts()
-    i = 0
     with open("parsed.txt", "w") as f:
-        for acc in accounts:
+        for i,acc in enumerate(accounts):
             uname = acc["login"]
             password = acc["password"]
             session = requests.session()
-            print(f"Processing account {uname}:{password}...")
+            print(f"\nProcessing account {uname}:{password}...")
             set_proxy(session, pr, i)
             if "cookies" in acc:
                 print("Account has cookies, adding them to request and skipping Log In...")
                 loggedin=True
                 jcookies=json.loads(acc['cookies'])
                 for jcookie in jcookies:
-                    session.cookies.set(jcookie['name'],jcookie['value'])
+                    session.cookies.set(jcookie['name'],jcookie['value'],domain=jcookie['domain'])
             else:
                 loggedin = login(session, uname, password)
 
