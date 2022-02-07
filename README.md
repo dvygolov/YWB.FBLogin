@@ -6,9 +6,11 @@ It can optionally get account's birthday and email using Tinder app, that it add
 0. Install all the requirements from `requirements.txt` using:<br>
 `pip install -r requirements.txt`
 1. Create an `accounts.txt` file, put your logins and passwords delimited by semicolon like:<br>
-login1:pass1<br>
-login2:pass2<br>
-and so on...
+`login1:pass1<br>
+login2:pass2<br>`
+and so on...<br>
+If you want, you can use accounts with cookies, then the login part will be skipped. Accounts with cookies should look like this:<br>
+`login:pass:[cookies in json format]`
 2. Create a `proxy.txt` file and put your proxy (or several proxies line by line) like this:<br>
 `ip:port:login:password:ipupdatelink`<br>
 If you don't need ip update link then just use: `ip:port:login:password`<br>
