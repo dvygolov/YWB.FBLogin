@@ -21,16 +21,14 @@ class Tinder:
             access_token = re.search( r"access_token=([\w\d]+)", s.response.content.decode()).groups()[0]
             return access_token
         except requests.exceptions.InvalidSchema as browserAddress:
-            access_token = re.search(
-                r"access_token=([\w\d]+)",str(browserAddress)).groups()[0]
+            access_token = re.search(r"access_token=([\w\d]+)",str(browserAddress)).groups()[0]
             return access_token
         except Exception as ex:
             print("access token could not be retrieved. Check your username and password.")
             print("Official error: %s" % ex)
-            return {"error": "access token could not be retrieved. Check your username and password."}
+            return "Tinder Access Token could not be retrieved!"
 
 
     def get_acc_info(self,access_token):
-        req = requests.get(
-            'https://graph.facebook.com/me?scope=email&fields=email,birthday&access_token=' + access_token)
+        req = requests.get(f"https://graph.facebook.com/me?scope=email&fields=email,birthday&access_token={access_token}")
         return req.json()
