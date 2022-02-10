@@ -7,7 +7,7 @@ from Tinder import Tinder
 
 def copyright():
     print()
-    print("               Get Facebook Cookies and Access Token v1.2")
+    print("               Get Facebook Cookies and Access Token v1.3")
     print("   _            __     __  _ _             __          __  _     ")
     print("  | |           \ \   / / | | |            \ \        / / | |    ")
     print("  | |__  _   _   \ \_/ /__| | | _____      _\ \  /\  / /__| |__  ")
@@ -82,8 +82,8 @@ def set_proxy(session, proxies, i):
         else:
             print("Proxy ip address updated!")
     sproxy = {
-        "https",
-        f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
+        "https": f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
+        "http": f"https://{cp['login']}:{cp['password']}@{cp['ip']}:{cp['port']}",
     }
     session.proxies = sproxy
     return
