@@ -2,6 +2,12 @@
 This script logs in to Facebook using login and password, gets access token and cookies and writes it all into a text file. 
 It can optionally get account's birthday and email using Tinder app, that it adds to the account.
 
+# !Warning!
+Be aware that if your accounts were registered using a proxy from one country (for example UA) and now you use for this script a proxy from some
+other country (like RU), then there is a big chance that Facebook won't login your account. You'll get a "Wrong username or password" error in my script then.
+To check, if this is the case, create a profile in your antidetect browser with your proxy and try to login. If you can't - then change your proxies so they match
+account's country and try again in the browser. Only after you are able to login in the browser - start the script.
+
 # Usage
 0. Install all the requirements from `requirements.txt` using:<br>
 `pip install -r requirements.txt`
