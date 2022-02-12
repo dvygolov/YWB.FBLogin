@@ -1,12 +1,6 @@
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import requests,json
-from copyright import Copyright
-from headers import Headers
-from biscuits import Biscuits
-from parsing import Parsing
-from proxies import Proxies
-#from tinder import Tinder
-from fbrequests import FB
+import copyright, headers, biscuits, parsing, proxies, fbrequests
 
 def get_accounts():
     accounts = []
@@ -15,7 +9,7 @@ def get_accounts():
     for a in alines:
         acs = a.strip().split(":")
         acc={"login": acs[0], "password": acs[1]}
-        cookies= Parsing.get_cookies(a)
+        cookies= parsing.get_cookies(a)
         if cookies!=None:
             acc["cookies"]=cookies
         accounts.append(acc)
@@ -23,11 +17,11 @@ def get_accounts():
 
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    Copyright.copyright()
+    copyright.show()
     tanswer=input("Do you want to get birthday and email, using Tinder app?(Y/N)")
-    tndr = Tinder() if (tanswer == "Y" or tanswer=="y") else None
+    tndr = True if (tanswer == "Y" or tanswer=="y") else False
     
-    pr = Proxies.get_proxies()
+    pr = proxies.get_proxies()
     accounts = get_accounts()
     with open("parsed.txt", "w") as f:
         for i,acc in enumerate(accounts):
@@ -36,30 +30,30 @@ if __name__ == "__main__":
             print(f"\nProcessing account {uname}:{password}...")
 
             session = requests.session()
-            Headers.set_headers(session)
-            Headers.set_useragent(session)
-            Proxies.set_proxy(session, pr, i)
+            headers.set_headers(session)
+            headers.set_useragent(session)
+            proxies.set_proxy(session, pr, i)
             if "cookies" in acc:
                 print("Account has cookies, adding them to request and skipping Log In...")
                 loggedin=True
-                Biscuits.load_cookies(session,acc['cookies'])
+                biscuits.load_cookies(session,acc['cookies'])
             else:
-                loggedin = FB.login(session, uname, password)
+                loggedin = fbrequests.login(session, uname, password)
 
             if not loggedin:
                 continue
-            token = FB.get_token(session)
+            token = fbrequests.get_token(session)
             if token == None:
                 print("Token not found!")
                 continue
             print("Found Accesss Token!")
-            acc["cookies"] = json.dumps(Biscuits.dump_cookies(session.cookies))
+            acc["cookies"] = json.dumps(biscuits.dump_cookies(session.cookies))
             acc["token"] = token
-            if tndr != None:
-                ttoken = tndr.get_fb_access_token(uname, password)
+            if tndr:
+                ttoken = tinder.get_tinder_access_token(uname, password)
                 if ttoken.startswith("EAA"):
                     print("Got Tinder app token...")
-                    info = tndr.get_acc_info(ttoken)
+                    info = tinder.get_acc_info(ttoken)
                     print("Got account info!")
                     if "email" in info:
                         f.write(
