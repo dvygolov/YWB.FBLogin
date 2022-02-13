@@ -27,6 +27,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="accounts.py" />
     <Compile Include="biscuits.py" />
     <Compile Include="copyright.py" />
     <Compile Include="fbrequests.py" />
