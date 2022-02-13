@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>74732ec5-2dd0-47c8-abaf-c04199a72696</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>YWB.FBLogin.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,8 +27,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Tinder.py" />
-    <Compile Include="YWB.FBLogin.py" />
+    <Compile Include="accounts.py" />
+    <Compile Include="biscuits.py" />
+    <Compile Include="copyright.py" />
+    <Compile Include="fbrequests.py" />
+    <Compile Include="headers.py" />
+    <Compile Include="parsing.py" />
+    <Compile Include="proxies.py" />
+    <Compile Include="tndr.py" />
+    <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.10" />
