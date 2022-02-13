@@ -9,7 +9,7 @@ To check, if this is the case, create a profile in your antidetect browser with 
 account's country and try again in the browser. Only after you are able to login in the browser - start the script.
 
 # Usage
-0. Install all the requirements from `requirements.txt` using:<br>
+0. Install the latest version of Python. Don't use 2.x, only 3.10 or later. Then install all the requirements from `requirements.txt` using:<br>
 `pip install -r requirements.txt`
 1. Create an `accounts.txt` file, put your logins and passwords delimited by semicolon like:<br>
 `login1:pass1`<br>
