@@ -1,6 +1,6 @@
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import requests,json
-import copyright, headers, biscuits, parsing, proxies, fbrequests
+import copyright, headers, biscuits, parsing, proxies, fbrequests, tndr
 
 def get_accounts():
     accounts = []
@@ -44,16 +44,17 @@ if __name__ == "__main__":
                 continue
             token = fbrequests.get_token(session)
             if token == None:
-                print("Token not found!")
+                print("Access Token not found!")
                 continue
             print("Found Accesss Token!")
             acc["cookies"] = json.dumps(biscuits.dump_cookies(session.cookies))
             acc["token"] = token
             if tndr:
-                ttoken = tinder.get_tinder_access_token(uname, password)
-                if ttoken.startswith("EAA"):
+                ttoken = tndr.get_tinder_access_token(uname, password)
+
+                if ttoken != None:
                     print("Got Tinder app token...")
-                    info = tinder.get_acc_info(ttoken)
+                    info = fbrequests.get_acc_info(ttoken)
                     print("Got account info!")
                     if "email" in info:
                         f.write(
@@ -64,7 +65,6 @@ if __name__ == "__main__":
                             f"{acc['login']}:{acc['password']}:{info['birthday']}:{acc['token']}:{acc['cookies']}\n"
                         )
                 else:
-                    print("Couldn't get Tinder app token(")
                     f.write(
                         f"{acc['login']}:{acc['password']}:{acc['token']}:{acc['cookies']}\n"
                     )

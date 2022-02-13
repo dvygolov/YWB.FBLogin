@@ -60,3 +60,9 @@ def get_token(session):
         return parsing.parse_token(response.text)
     else:
         return parsing.parse_token(response.text)
+
+def get_acc_info(session,access_token):
+    req = session.get(
+        f"https://graph.facebook.com/me?scope=email&fields=email,birthday&access_token={access_token}"
+    )
+    return req.json()

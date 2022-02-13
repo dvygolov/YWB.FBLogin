@@ -33,7 +33,7 @@
     <Compile Include="headers.py" />
     <Compile Include="parsing.py" />
     <Compile Include="proxies.py" />
-    <Compile Include="tinder.py" />
+    <Compile Include="tndr.py" />
     <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
