@@ -50,7 +50,7 @@ if __name__ == "__main__":
             acc["cookies"] = json.dumps(biscuits.dump_cookies(session.cookies))
             acc["token"] = token
             if tndr:
-                ttoken = tndr.get_tinder_access_token(uname, password)
+                ttoken = tndr.get_tinder_access_token(session,uname, password)
 
                 if ttoken != None:
                     print("Got Tinder app token...")
