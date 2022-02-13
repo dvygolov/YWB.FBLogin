@@ -22,7 +22,7 @@ If you want, you can use accounts with cookies, then the login part will be skip
 If you don't need ip update link then just use: `ip:port:login:password`<br>
 If you add multiple proxies they will be used in a round robbin manner.<br>
 **This script doesn't (and won't) support SOCKS proxies.**
-3. Run the script using Pyton 3.7 or higher: `python3 main.py`
+3. Run the script using: `python3 main.py`
 4. If you don't need birthday and email then answer 'N' to the question about adding Tinder app
 5. After everything is done all the account's info will be saved to `parsed.txt` file.
 
