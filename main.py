@@ -19,7 +19,7 @@ if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     copyright.show()
     tanswer=input("Do you want to get birthday and email, using Tinder app?(Y/N)")
-    tndr = True if (tanswer == "Y" or tanswer=="y") else False
+    use_tinder = True if (tanswer == "Y" or tanswer=="y") else False
     
     pr = proxies.get_proxies()
     accounts = get_accounts()
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             print("Found Accesss Token!")
             acc["cookies"] = json.dumps(biscuits.dump_cookies(session.cookies))
             acc["token"] = token
-            if tndr:
+            if use_tinder:
                 ttoken = tndr.get_tinder_access_token(session,uname, password)
 
                 if ttoken != None:
