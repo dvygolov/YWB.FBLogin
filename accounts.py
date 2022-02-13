@@ -24,7 +24,7 @@ class Account:
         pass
 
     def __str__(self):
-        attrs=["login","password","email","birthday","cookies","token"]
+        attrs=["login","password","email","birthday","token","cookies"]
         str=""
         for attr in attrs:
             attr_value=getattr(self,attr)
