@@ -17,10 +17,11 @@ account's country and try again in the browser. Only after you are able to login
 and so on...<br>
 If you want, you can use accounts with cookies, then the login part will be skipped. Accounts with cookies should look like this:<br>
 `login:pass:[cookies in json format]`
-2. Create a `proxy.txt` file and put your proxy (or several proxies line by line) like this:<br>
+2. Create a `proxy.txt` file and put your HTTP proxy (or several HTTP proxies line by line) like this:<br>
 `ip:port:login:password:ipupdatelink`<br>
 If you don't need ip update link then just use: `ip:port:login:password`<br>
-If you add multiple proxies they will be used in a round robbin manner.
+If you add multiple proxies they will be used in a round robbin manner.<br>
+**This script doesn't (and won't) support SOCKS proxies.**
 3. Run the script using Pyton 3.7 or higher: `python3 main.py`
 4. If you don't need birthday and email then answer 'N' to the question about adding Tinder app
 5. After everything is done all the account's info will be saved to `parsed.txt` file.
