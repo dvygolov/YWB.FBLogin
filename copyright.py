@@ -1,6 +1,6 @@
 def show():
     print()
-    print("               Get Facebook Cookies and Access Token v1.4.0")
+    print("               Get Facebook Cookies and Access Token v1.4.1")
     print("   _            __     __  _ _             __          __  _     ")
     print("  | |           \ \   / / | | |            \ \        / / | |    ")
     print("  | |__  _   _   \ \_/ /__| | | _____      _\ \  /\  / /__| |__  ")

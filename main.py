@@ -1,11 +1,10 @@
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import requests, json
-from accounts import get_accounts, Account
+from accounts import get_accounts
 from proxies import get_proxies, set_proxy
 from headers import set_useragent, set_headers 
 from biscuits import load_cookies, dump_cookies
 from tndr import get_tinder_access_token
-from parsing import get_cookies, get_login_form_params, get_redirect, parse_token
 from fbrequests import login, get_token, get_acc_info
 import copyright 
 
@@ -52,5 +51,6 @@ if __name__ == "__main__":
                     acc.add_info(info)
             f.write(str(acc))
             i += 1
+            f.flush()
 
     print("All done. Accounts with tokens and cookies written to parsed.txt file.")
