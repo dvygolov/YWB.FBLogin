@@ -25,22 +25,19 @@ if __name__ == "__main__":
             set_useragent(session)
             set_proxy(session, pr, i)
             if acc.cookies!=None:
-                print(
-                    "Account has cookies, adding them to request and skipping Log In..."
-                )
-                loggedin = True
+                print( "Account has cookies, adding them to request and skipping Log In..." )
                 load_cookies(session, acc.cookies)
             else:
                 loggedin = login(session, acc.login, acc.password)
+                acc.cookies = json.dumps(dump_cookies(session.cookies))
+                if not loggedin:
+                    continue
 
-            if not loggedin:
-                continue
             token = get_token(session)
             if token == None:
                 print("Access Token not found!")
                 continue
             print("Found Accesss Token!")
-            acc.cookies = json.dumps(dump_cookies(session.cookies))
             acc.token = token
             if use_tinder:
                 ttoken = get_tinder_access_token(session)
@@ -50,7 +47,6 @@ if __name__ == "__main__":
                     print("Got account info!")
                     acc.add_info(info)
             f.write(str(acc))
-            i += 1
             f.flush()
 
     print("All done. Accounts with tokens and cookies written to parsed.txt file.")
