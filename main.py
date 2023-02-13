@@ -34,7 +34,7 @@ if __name__ == "__main__":
                     continue
 
             token = get_token(session)
-            if token == None:
+            if token is None:
                 print("Access Token not found!")
                 continue
             print("Found Accesss Token!")
