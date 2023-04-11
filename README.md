@@ -10,7 +10,7 @@
           |___/             https://yellowweb.top                 
 
 If you like this script, PLEASE DONATE!  
-WebMoney: Z182653170916  
+USDT TRC20: TKeNEVndhPSKXuYmpEwF4fVtWUvfCnWmra
 Bitcoin: bc1qqv99jasckntqnk0pkjnrjtpwu0yurm0qd0gnqv  
 Ethereum: 0xBC118D3FDE78eE393A154C29A4545c575506ad6B  
 ```
@@ -35,7 +35,7 @@ and so on...<br>
 If you want, you can use accounts with cookies, then the login part will be skipped. Accounts with cookies should look like this:<br>
 `login:pass:[cookies in json format]`
 2. Create a `proxy.txt` file and put your HTTP proxy (or several HTTP proxies line by line) like this:<br>
-`ip:port:login:password:ipupdatelink`<br>
+`ip:port:login:password(ipupdatelink)`<br>
 If you don't need ip update link then just use: `ip:port:login:password`<br>
 If you add multiple proxies they will be used in a round robbin manner.<br>
 **This script doesn't (and won't) support SOCKS proxies.**
