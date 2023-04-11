@@ -27,14 +27,19 @@ def login(session, email, password):
         "email": email,
         "pass": password,
         "login": "Log In",
-        "_fb_noscript": False
+        "_fb_noscript": "true"
     }
     inputs.update(params)
-    response = session.post(
-        f"https://m.facebook.com{action}",
-        data=inputs,
-        allow_redirects=False,
-    )
+    code = 200
+    tryCount = 0
+    while code == 200 and tryCount < 2:
+        response = session.post(
+            f"https://mobile.facebook.com{action}",
+            data=inputs,
+            allow_redirects=False,
+        )
+        code = response.status_code
+        tryCount = tryCount + 1
     if response.status_code == 302:
         if "c_user" in session.cookies:
             print("Logged in!")
@@ -56,19 +61,26 @@ def get_token(session):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"})
     session.cookies.pop("noscript", None)
     response = session.get(
-        "https://www.facebook.com/ads/manager",
+        "https://adsmanager.facebook.com/ads/manager",
         allow_redirects=True,
+        stream=True
     )
+    if response.encoding is None:
+        response.encoding = 'utf-8'
+
+    content = response.content.decode('utf-8')
     if "checkpoint" in response.url:
         print("Checkpoint!")
         return None
     if "login" in response.url:
         print("Account not logged in!")
         return None
-    redirect = parsing.get_redirect(response.text)
-    if redirect is not None:
+    redirect = parsing.get_redirect(content)
+    if redirect is None:
+        return parsing.parse_token(content)
+    else:
         act = parsing.parse_act(redirect)
-        finalUrl = f"https://www.facebook.com/adsmanager/?act={act}&nav_source=no_referrer"
+        finalUrl = f"https://adsmanager.facebook.com/adsmanager?act={act}&nav_source=no_referrer"
         response = session.get(finalUrl, allow_redirects=True)
         if "privacy/consent/user_cookie_choice" in response.url:
             expId = parsing.parse_experience(response.text)
@@ -105,8 +117,6 @@ def get_token(session):
             }
             send_private_api_request(session, 4943422439028807, variables)
             response = session.get(finalUrl, allow_redirects=True)
-        return parsing.parse_token(response.text)
-    else:
         return parsing.parse_token(response.text)
 
 
